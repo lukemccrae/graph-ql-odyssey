@@ -10,6 +10,31 @@ const resolvers = {
       return dataSources.trackAPI.getTrack(id);
     },
   },
+
+  Mutation: {
+    incrementTrackViews: async (_, {id}, {dataSources}) => {
+      try {
+        const track = await dataSources.trackAPI.incrementTrackViews(id);
+        return {
+          code: 200,
+          success: true,
+          message: `Track views incremented for track ${id}`,
+          track
+        }
+      } catch(err) {
+        //here we're extending the REST functionality to show the HTTP status code
+          //since of course, dataSources.trackAPI is the underneath web server
+        return {
+          code: err.extensions.reesponse.status,
+          success: false,
+          message: err.extensions.reesponse.body,
+          track: null
+        }
+      }
+    }
+      
+  },
+
   Track: {
     author: ({ authorId }, _, { dataSources }) => {
       return dataSources.trackAPI.getAuthor(authorId);
